@@ -6,9 +6,9 @@ import pandas as pd
 import sqlite3
 
 
-def fetch_books(query: str ,
-                max_result : int=40,
-                filter_books : str = "paid-ebooks",
+def fetch_books(query: str,
+                max_result: int = 40,
+                filter_books: str = "paid-ebooks",
                 orderby: str = "relevance") -> list[dict] :
     
         # URL de l'API Google Books
@@ -24,7 +24,7 @@ def fetch_books(query: str ,
     # Request the Google Books API
     response = requests.get(url, params = params)
     # Check response status code
-    response.raise_for_status
+    response.raise_for_status()
     print(response)
     print(response.url)
     # Retrieve the heart of the answer
@@ -93,29 +93,3 @@ def save_to_db(df: pd.DataFrame,
     conn.commit()
     conn.close()
     logging.info("Wrote %d rows to table '%s' in %s.", len(rows), table_name, db_path)
-
-
-if __name__ == "__main__":
-    # 1) Fetch books from the API
-    raw_items = fetch_books(query="food", max_results=40)
-    logging.info("Fetched %d raw items.", len(raw_items))
-
-    # 2) Normalize the raw data into a DataFrame
-    df = normalize_books(raw_items)
-    logging.info("Normalized into DataFrame with %d rows.", len(df))
-
-    # 3) Clean the DataFrame (drop NaNs, reset index, add availability)
-    clean_df = clean_books(df)
-    logging.info("After cleaning: %d rows remain.", len(clean_df))
-
-    # 4) Save cleaned data to the database
-    db_path = os.getenv("DATABASE_PATH", "book_store.db")
-    save_to_db(clean_df, db_path)
-
-    # 5) Confirm total row count in the table
-    conn = sqlite3.connect(db_path)
-    cursor = conn.cursor()
-    cursor.execute(f"SELECT COUNT(*) FROM books_informations")
-    total = cursor.fetchone()[0]
-    conn.close()
-    logging.info("Total rows now in DB: %d", total)

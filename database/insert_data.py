@@ -31,8 +31,4 @@ def insert_to_database(csv_rel_path: str, db_name: str) -> int:
     print(f"Inserted {count} records into database file: {db_path}")
     return count
 
-if __name__ == "__main__":
-    # example usage
-    n = insert_to_database("Data/books_infos.csv", "book_store")
-    print(f"Verified {n} rows inserted.")
 

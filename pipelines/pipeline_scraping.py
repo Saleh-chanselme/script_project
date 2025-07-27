@@ -6,6 +6,12 @@ import pandas as pd
 from get_data.scraping_data import scrape_books
 from process_data.process_scraping_data import convert_types
 from database.insert_data import insert_to_database
+from google_books_API import google_books_API as gba
+import sys
+import os
+
+# # adding project root to path
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 def run_pipeline_scraping(pages: int, db_name: str):
     """
@@ -42,4 +48,19 @@ def run_pipeline_scraping(pages: int, db_name: str):
     print(f"Database load complete – {inserted} rows now in `{db_name}.db`")
     print("#" * 50)
     print("Pipeline completed successfully!")
+    
+    # 1. Fetch raw data from the API
+    raw_items = gba.fetch_books("food")
+    import json
+    print(json.dumps(raw_items[0], indent=2))  
 
+    # 2. Normalize the raw JSON data into a flat list of dictionaries
+    normalize = gba.normalize_books(raw_items=raw_items)
+
+    # 3. Clean the normalized data using pandas
+    df = pd.DataFrame(normalize)
+    clean_books = gba.clean_books(df=df)
+
+    # 4. Save the cleaned dataframe to a SQLite database
+    savedf = gba.save_to_db(df=clean_books, db_path="books.db")
+    

@@ -28,9 +28,3 @@ def convert_types(df: pd.DataFrame) -> pd.DataFrame:
     ratings_map = {"One": 1, "Two": 2, "Three": 3, "Four": 4, "Five": 5}
     df["rating"] = df["rating"].map(ratings_map).fillna(0).astype(int)
     return df
-
-if __name__ == "__main__":
-    df = pd.read_csv("Data/books_infos.csv")
-    df = convert_types(df)
-    print(df.dtypes)
-    print(df.head())

@@ -49,12 +49,3 @@ def scrape_books(pages: int) -> list[dict]:
             all_books.append(extract_book_info(art))
     return all_books
 
-if __name__ == "__main__":
-    books = scrape_books(50)
-    df_books = pd.DataFrame(books)
-    print(f"Number of books scraped: {len(df_books)}")
-    out = Path("Data")
-    out.mkdir(exist_ok=True)
-    csv_path = out / "books_infos.csv"
-    df_books.to_csv(csv_path, index=False)
-    print(f"Saved raw data to {csv_path}")
